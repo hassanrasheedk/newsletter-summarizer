@@ -1,6 +1,21 @@
 {
   "version": 1,
   "skills": {
+    "agent-browser": {
+      "source": "vercel-labs/agent-browser",
+      "sourceType": "github",
+      "computedHash": "2f771f8eb25f9856d2169a4de4766de94e2bdbff999f42c458c8f1e2ca405c03"
+    },
+    "app-store-screenshots": {
+      "source": "inference-sh-9/skills",
+      "sourceType": "github",
+      "computedHash": "6e4f5f7032e28111dde99239c1aa892fe64d97527cd8482d94fb17424f335cae"
+    },
+    "browser-use": {
+      "source": "browser-use/browser-use",
+      "sourceType": "github",
+      "computedHash": "409117e97ea4689e138a2080bfa94893e31ea216fbd0220d834dbdb791ecbe0e"
+    },
     "find-skills": {
       "source": "vercel-labs/skills",
       "sourceType": "github",
