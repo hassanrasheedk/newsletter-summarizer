@@ -158,6 +158,16 @@ export function getAllTags(): TagCount[] {
     .sort((a, b) => b.count - a.count)
 }
 
+export function getExistingIssueIds(ids: string[]): string[] {
+  if (ids.length === 0) return []
+  const db = getDb()
+  const placeholders = ids.map(() => '?').join(',')
+  const rows = db.prepare(
+    `SELECT id FROM newsletter_issues WHERE id IN (${placeholders})`
+  ).all(...ids) as { id: string }[]
+  return rows.map((r) => r.id)
+}
+
 export function getIssuesByTag(tag: string): NewsletterIssue[] {
   const db = getDb()
   const rows = db.prepare(

@@ -4,7 +4,7 @@ import { listMessageIds, getMessage } from '@/lib/gmail'
 import { isNewsletter, extractDomain, extractSenderName } from '@/lib/newsletter-detector'
 import { summarizeNewsletter } from '@/lib/claude'
 import { scoreNewsletter } from '@/lib/social-scorer'
-import { upsertSource, upsertIssue } from '@/lib/db'
+import { upsertSource, upsertIssue, getExistingIssueIds } from '@/lib/db'
 import type { NewsletterSource, NewsletterIssue, ImportanceLevel } from '@/types'
 import { randomUUID } from 'crypto'
 
@@ -17,7 +17,11 @@ export async function POST() {
   const ids = await listMessageIds(session.accessToken, 'in:inbox', 100)
   let synced = 0
 
-  for (const id of ids.slice(0, 30)) {
+  // Skip emails that are already in the database so we only process new ones
+  const existingIds = new Set(getExistingIssueIds(ids))
+  const newIds = ids.filter((id) => !existingIds.has(id))
+
+  for (const id of newIds.slice(0, 50)) {
     const msg = await getMessage(session.accessToken, id).catch(() => null)
     if (!msg || !isNewsletter(msg)) continue
 
