@@ -46,3 +46,6 @@ data/*.db
 
 # local env
 .env.local
+
+# marketing
+/marketing
