@@ -1,9 +1,11 @@
 import OpenAI from 'openai'
 import type { SummarizeResult } from '@/types'
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+let _client: OpenAI | null = null
+function getClient() {
+  if (!_client) _client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  return _client
+}
 
 const SYSTEM_PROMPT = `You are a newsletter analyst. Extract the most important information concisely. Be direct and avoid filler words. Always respond with valid JSON only.`
 
@@ -13,7 +15,7 @@ export async function summarizeNewsletter(
 ): Promise<SummarizeResult> {
   const truncatedContent = content.slice(0, 8000)
 
-  const response = await client.chat.completions.create({
+  const response = await getClient().chat.completions.create({
     model: 'gpt-4o-mini',
     response_format: { type: 'json_object' },
     messages: [
