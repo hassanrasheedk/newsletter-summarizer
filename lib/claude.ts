@@ -11,12 +11,13 @@ const SYSTEM_PROMPT = `You are a newsletter analyst. Extract the most important 
 
 export async function summarizeNewsletter(
   subject: string,
-  content: string
+  content: string,
+  model = 'gpt-5-mini'
 ): Promise<SummarizeResult> {
   const truncatedContent = content.slice(0, 8000)
 
   const response = await getClient().chat.completions.create({
-    model: 'gpt-4o-mini',
+    model,
     response_format: { type: 'json_object' },
     messages: [
       { role: 'system', content: SYSTEM_PROMPT },

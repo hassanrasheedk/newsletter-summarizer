@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { listMessageIds, getMessage } from '@/lib/gmail'
 import { isNewsletter, extractDomain, extractSenderName } from '@/lib/newsletter-detector'
@@ -8,11 +8,14 @@ import { upsertSource, upsertIssue, getExistingIssueIds, getTrackedSenderEmails 
 import type { NewsletterSource, NewsletterIssue, ImportanceLevel } from '@/types'
 import { randomUUID } from 'crypto'
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   const session = await auth()
   if (!session?.accessToken) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
+
+  const body = await req.json().catch(() => ({})) as { model?: string }
+  const model = body.model ?? 'gpt-5-mini'
 
   const ids = await listMessageIds(session.accessToken, 'in:inbox', 100)
   let synced = 0
@@ -50,7 +53,7 @@ export async function POST() {
     upsertSource(source)
 
     const [ai, social] = await Promise.allSettled([
-      summarizeNewsletter(msg.subject, msg.cleanedText),
+      summarizeNewsletter(msg.subject, msg.cleanedText, model),
       scoreNewsletter(msg.subject),
     ])
 

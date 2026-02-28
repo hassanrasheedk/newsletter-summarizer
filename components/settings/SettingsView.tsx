@@ -32,8 +32,8 @@ const CATEGORIES: Category[] = [
 ]
 
 const AI_MODELS = [
-  { value: 'gpt-4o-mini', label: 'GPT-4o Mini', desc: 'Fast · Lower cost · Good quality' },
-  { value: 'gpt-4o',      label: 'GPT-4o',      desc: 'Slower · Higher cost · Best quality' },
+  { value: 'gpt-5-mini', label: 'GPT-5 Mini', desc: 'Fast · Lower cost · Latest model' },
+  { value: 'gpt-5.2',    label: 'GPT-5.2',    desc: 'Slower · Higher cost · Most capable' },
 ]
 
 function cleanName(raw: string) {
@@ -69,7 +69,7 @@ export function SettingsView() {
   const [sources, setSources] = useState<NewsletterSource[]>([])
   const [loading, setLoading] = useState(true)
   const [syncing, setSyncing] = useState(false)
-  const [model, setModel] = useState('gpt-4o-mini')
+  const [model, setModel] = useState('gpt-5-mini')
 
   // Discover senders state
   const [senders, setSenders] = useState<SenderInfo[]>([])
@@ -80,7 +80,12 @@ export function SettingsView() {
 
   useEffect(() => {
     const saved = localStorage.getItem('ai_model')
-    if (saved) setModel(saved)
+    const validModels = AI_MODELS.map(m => m.value)
+    if (saved && validModels.includes(saved)) {
+      setModel(saved)
+    } else {
+      localStorage.removeItem('ai_model')
+    }
 
     Promise.all([
       fetch('/api/stats').then(r => r.json()),
@@ -94,7 +99,11 @@ export function SettingsView() {
   async function handleSync() {
     setSyncing(true)
     try {
-      const res = await fetch('/api/sync', { method: 'POST' })
+      const res = await fetch('/api/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model }),
+      })
       const data = await res.json() as { synced: number }
       toast.success(`Synced ${data.synced} newsletters`)
       const s = await fetch('/api/stats').then(r => r.json()) as DbStats
