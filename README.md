@@ -4,7 +4,13 @@
 
 Skimr connects to your Gmail, automatically detects newsletters, summarises them with GPT-5, and surfaces what actually matters — ranked by importance, beautifully presented, with your data staying on your machine.
 
-![Feed view](https://placehold.co/900x500/0C0C18/06B6D4?text=Skimr)
+![Feed view](public/assets/feed.png)
+
+![Reader view](public/assets/reader.png)
+
+![Digest view](public/assets/digest.png)
+
+![Tags view](public/assets/tags.png)
 
 ## Features
 
