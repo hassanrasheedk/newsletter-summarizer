@@ -34,7 +34,7 @@ export function QuickScanMode({ issues }: Props) {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col max-w-3xl mx-auto">
       {/* Legend */}
       <div className="flex items-center gap-4 px-4 py-2 border-b border-border bg-muted/20">
         <span className="text-[11px] text-muted-foreground font-medium uppercase tracking-wide">Priority key:</span>

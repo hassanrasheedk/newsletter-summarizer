@@ -31,10 +31,12 @@ export function FeedList() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-3 p-4">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-36 w-full rounded-xl" />
-        ))}
+      <div className="flex-1 overflow-y-auto">
+        <div className="flex flex-col gap-3 max-w-3xl mx-auto px-4 py-4">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton key={i} className="h-36 w-full rounded-xl" />
+          ))}
+        </div>
       </div>
     )
   }
@@ -58,8 +60,8 @@ export function FeedList() {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto p-4">
-      <div className="grid gap-3 max-w-2xl">
+    <div className="flex-1 overflow-y-auto">
+      <div className="flex flex-col gap-3 max-w-3xl mx-auto px-4 py-4">
         {filtered.map((issue) => (
           <NewsletterCard key={issue.id} issue={issue} />
         ))}

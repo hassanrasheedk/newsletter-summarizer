@@ -30,7 +30,8 @@ export function FeedHeader() {
   }
 
   return (
-    <header className="flex items-center gap-3 border-b border-border px-4 py-3">
+    <header className="border-b border-border py-3">
+      <div className="flex items-center gap-3 max-w-3xl mx-auto px-4">
       <div className="relative flex-1 max-w-sm">
         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
         <Input
@@ -61,6 +62,7 @@ export function FeedHeader() {
         <RefreshCw size={12} className={syncing ? 'animate-spin' : ''} />
         {syncing ? 'Syncing…' : 'Sync'}
       </Button>
+      </div>
     </header>
   )
 }
