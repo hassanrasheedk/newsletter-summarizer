@@ -1,17 +1,19 @@
-# Newsletter Summarizer
+# Skimr
 
-An AI-powered newsletter reader that connects to your Gmail, automatically detects newsletters, summarises them with GPT-4o, and surfaces what actually matters — locally, with your data staying on your machine.
+> AI skims your newsletters so you don't have to. Signal over noise.
 
-![Feed view](https://placehold.co/900x500/1a1a1a/6366f1?text=Newsletter+Summarizer)
+Skimr connects to your Gmail, automatically detects newsletters, summarises them with GPT-4o, and surfaces what actually matters — ranked by importance, beautifully presented, with your data staying on your machine.
+
+![Feed view](https://placehold.co/900x500/0C0C18/06B6D4?text=Skimr)
 
 ## Features
 
-- **Inbox** — card-based feed with AI-generated TL;DR, key points, importance score, and social signals (HN + Reddit buzz)
-- **Digest** — newsletters grouped by category (Tech, AI, Finance, …) with aggregate stats and expandable summaries
-- **Reader** — full email content alongside a sticky AI sidebar: summary, key points, why it matters
+- **Feed** — card-based inbox ranked by importance: *Must Read*, *Worth Reading*, *FYI* — with AI TL;DR, key points, and buzz indicators (*🔥 Trending* / *💬 Being discussed*)
+- **Digest** — newsletters grouped by category (Tech, AI, Finance, …) with average relevance scores and expandable summaries
+- **Reader** — full email content alongside a sticky AI sidebar: summary, key points, why it matters, online buzz
 - **Saved** — bookmark issues for later; one-click unsave
 - **Tags** — tag cloud auto-generated from AI analysis; click any tag to filter
-- **Settings** — manage connected sources, toggle sync per-sender, change category, swap AI model, trigger manual sync
+- **Settings** — manage connected sources, discover & manually track senders Skimr missed, toggle sync per-sender, swap AI model, trigger manual sync
 
 ## Tech Stack
 
@@ -87,8 +89,8 @@ Open [http://localhost:3000](http://localhost:3000).
 Gmail API
    ↓
 /api/sync  →  newsletter-detector.ts  (List-Unsubscribe header, known domains)
-               ↓
-           lib/claude.ts  (OpenAI: summary, key points, importance score, tags)
+               ↓  also picks up manually-tracked senders (Settings → Discover Senders)
+           lib/claude.ts  (OpenAI: summary, key points, importance, tags)
                ↓
            lib/social-scorer.ts  (HN Algolia + Reddit — buzz signal)
                ↓
@@ -97,7 +99,7 @@ Gmail API
         Next.js API routes → React UI
 ```
 
-Sync runs on demand (Settings → Sync now). On first connect the onboarding wizard scans your last 500 emails, detects newsletter senders, and lets you confirm which to follow.
+Sync runs on demand (Settings → Sync now). On first connect the onboarding wizard scans your last 500 emails, detects newsletter senders, and prompts you to start scanning. Use **Discover Senders** in Settings to manually track any newsletters Skimr missed.
 
 ## Project Structure
 
@@ -117,11 +119,13 @@ components/
   reader/             # EmailContent, AISidebar
   saved/              # SavedView
   tags/               # TagsView
-  settings/           # SettingsView
+  settings/           # SettingsView (includes Discover Senders)
+  onboarding/         # ConnectEmail
+  ui/                 # logo, button, card, …
 lib/
-  auth.ts             # NextAuth config
+  auth.ts             # NextAuth config (token refresh, trustHost)
   db.ts               # SQLite helpers
-  gmail.ts            # Gmail API client
+  gmail.ts            # Gmail API client + sender discovery
   claude.ts           # OpenAI wrapper (summarize)
   newsletter-detector.ts
   social-scorer.ts
