@@ -2,7 +2,7 @@
 
 > AI skims your newsletters so you don't have to. Signal over noise.
 
-Skimr connects to your Gmail, automatically detects newsletters, summarises them with GPT-4o, and surfaces what actually matters — ranked by importance, beautifully presented, with your data staying on your machine.
+Skimr connects to your Gmail, automatically detects newsletters, summarises them with GPT-5, and surfaces what actually matters — ranked by importance, beautifully presented, with your data staying on your machine.
 
 ![Feed view](https://placehold.co/900x500/0C0C18/06B6D4?text=Skimr)
 
@@ -22,7 +22,7 @@ Skimr connects to your Gmail, automatically detects newsletters, summarises them
 | Framework | Next.js 15 (App Router, Turbopack) |
 | Language | TypeScript |
 | Auth | NextAuth v5 — Google OAuth, Gmail read-only scope |
-| AI | OpenAI SDK — `gpt-4o-mini` / `gpt-4o` (user-selectable) |
+| AI | OpenAI SDK — `gpt-5-mini` / `gpt-5.2` (user-selectable) |
 | Database | better-sqlite3 — local SQLite with WAL mode |
 | Styling | Tailwind CSS v4 + shadcn/ui, OKLCH dark theme |
 | State | Zustand |
