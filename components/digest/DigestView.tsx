@@ -64,7 +64,7 @@ export function DigestView() {
             <div key={cat.name} className="rounded-lg border border-border bg-card px-4 py-3 flex flex-col gap-1">
               <p className="text-xs text-muted-foreground">{cat.name}</p>
               <p className="text-2xl font-bold tabular-nums">{cat.count}</p>
-              <p className="text-[11px] text-muted-foreground">avg {cat.avgScore} score</p>
+              <p className="text-[11px] text-muted-foreground">avg relevance: {cat.avgScore}</p>
             </div>
           ))}
         </div>

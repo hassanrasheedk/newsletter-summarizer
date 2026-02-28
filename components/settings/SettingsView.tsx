@@ -134,7 +134,7 @@ export function SettingsView() {
           ) : stats ? ([
             { label: 'Newsletters', value: stats.total },
             { label: 'Sources',     value: stats.sources },
-            { label: 'Avg Score',   value: stats.avgScore },
+            { label: 'Avg Relevance', value: stats.avgScore },
             { label: 'Saved',       value: stats.saved },
           ].map(({ label, value }) => (
             <div key={label} className="rounded-xl border border-border bg-card px-4 py-3 flex flex-col gap-1">

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Inbox, Star, Tag, Settings, ChevronLeft, ChevronRight, Bot } from 'lucide-react'
+import { Inbox, Star, Tag, Settings, ChevronLeft, ChevronRight, Bot, Newspaper, CheckCircle2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
@@ -32,10 +32,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         >
           {/* Logo */}
           <div className={cn('flex h-14 items-center border-b border-border px-3', collapsed ? 'justify-center' : 'gap-2')}>
-            {!collapsed && (
-              <span className="truncate text-sm font-semibold text-sidebar-foreground">
-                Newsletter Summarizer
-              </span>
+            {collapsed ? (
+              <Newspaper size={18} className="text-primary shrink-0" />
+            ) : (
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <Newspaper size={16} className="text-primary shrink-0" />
+                <span className="truncate text-sm font-semibold text-sidebar-foreground">
+                  Newsletter Summarizer
+                </span>
+              </div>
             )}
             <button
               onClick={() => setCollapsed((c) => !c)}
@@ -79,10 +84,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             {!collapsed && (
               <>
                 <Separator className="my-3 mx-2" />
-                <p className="px-4 text-xs font-medium uppercase tracking-wider text-muted-foreground mb-1">
-                  Sources
+                <p className="px-4 text-xs font-medium uppercase tracking-wider text-muted-foreground mb-2">
+                  Connected
                 </p>
-                <p className="px-4 text-xs text-muted-foreground">Gmail ✓</p>
+                <div className="px-4 flex items-center gap-1.5">
+                  <CheckCircle2 size={12} className="text-[oklch(0.62_0.18_162)] shrink-0" />
+                  <span className="text-xs text-muted-foreground">Gmail</span>
+                </div>
               </>
             )}
           </ScrollArea>

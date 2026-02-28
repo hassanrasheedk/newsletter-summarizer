@@ -1,6 +1,6 @@
 'use client'
 
-import { BookOpen, Sparkles, Archive, Star, Clock } from 'lucide-react'
+import { BookOpen, Sparkles, Archive, Star, Clock, Flame, MessageCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -10,16 +10,16 @@ import { cn } from '@/lib/utils'
 import { useFeedStore } from '@/store/feed'
 import type { NewsletterIssue } from '@/types'
 
-const BUZZ_COLORS = {
-  low: 'text-muted-foreground',
-  medium: 'text-[oklch(0.72_0.19_75)]',
-  high: 'text-[oklch(0.62_0.18_162)]',
-}
-
 const IMPORTANCE_STYLES = {
   high: 'bg-[oklch(0.62_0.18_162/0.15)] text-[oklch(0.62_0.18_162)] border-[oklch(0.62_0.18_162/0.3)]',
   medium: 'bg-[oklch(0.72_0.19_75/0.15)] text-[oklch(0.72_0.19_75)] border-[oklch(0.72_0.19_75/0.3)]',
   low: 'bg-muted text-muted-foreground border-border',
+}
+
+const IMPORTANCE_LABELS = {
+  high: 'Must Read',
+  medium: 'Worth Reading',
+  low: 'FYI',
 }
 
 interface Props {
@@ -28,6 +28,26 @@ interface Props {
 
 function readingTime(text: string): number {
   return Math.max(1, Math.round(text.split(/\s+/).length / 200))
+}
+
+function BuzzIndicator({ buzz }: { buzz: 'high' | 'medium' | 'low' }) {
+  if (buzz === 'high') {
+    return (
+      <span className="flex items-center gap-1 text-[oklch(0.62_0.18_162)] text-xs font-medium">
+        <Flame size={11} />
+        Trending
+      </span>
+    )
+  }
+  if (buzz === 'medium') {
+    return (
+      <span className="flex items-center gap-1 text-muted-foreground text-xs">
+        <MessageCircle size={11} />
+        Being discussed
+      </span>
+    )
+  }
+  return null
 }
 
 export function NewsletterCard({ issue }: Props) {
@@ -39,11 +59,17 @@ export function NewsletterCard({ issue }: Props) {
     router.push(`/read/${issue.id}`)
   }
 
+  function handleAction(e: React.MouseEvent, action: () => void) {
+    e.stopPropagation()
+    action()
+  }
+
   return (
     <Card
+      onClick={handleRead}
       className={cn(
-        'group cursor-pointer transition-all duration-150 hover:border-primary/40 hover:shadow-sm animate-slide-up',
-        issue.isRead && 'opacity-60'
+        'group cursor-pointer transition-all duration-150 hover:border-primary/40 hover:shadow-md animate-slide-up',
+        issue.isRead && 'opacity-55'
       )}
     >
       <CardContent className="p-4 flex flex-col gap-2.5">
@@ -51,9 +77,9 @@ export function NewsletterCard({ issue }: Props) {
         <div className="flex items-center gap-2">
           <Badge
             variant="outline"
-            className={cn('text-[10px] font-semibold uppercase tracking-wide', IMPORTANCE_STYLES[issue.importanceLevel])}
+            className={cn('text-[10px] font-semibold uppercase tracking-wide shrink-0', IMPORTANCE_STYLES[issue.importanceLevel])}
           >
-            {issue.importanceLevel}
+            {IMPORTANCE_LABELS[issue.importanceLevel]}
           </Badge>
           <span className="text-xs text-muted-foreground truncate flex-1">{issue.subject.split(' - ')[0] || issue.subject}</span>
           <span className="text-xs text-muted-foreground shrink-0">
@@ -81,58 +107,56 @@ export function NewsletterCard({ issue }: Props) {
           </ul>
         )}
 
-        <div className="border-t border-border pt-2 mt-0.5 flex items-center gap-3">
-          {/* Social score */}
-          <div className={cn('text-xs flex items-center gap-1.5', BUZZ_COLORS[issue.socialScore.totalBuzz])}>
-            <span className="font-medium">
-              {issue.socialScore.totalBuzz === 'high' ? '🟢' : issue.socialScore.totalBuzz === 'medium' ? '🟡' : '🔴'}
-            </span>
-            <span>HN:{issue.socialScore.hnMentions}</span>
-            <span>r/{issue.socialScore.redditMentions}</span>
-          </div>
+        {/* Footer: buzz + reading time + actions */}
+        <div className="border-t border-border pt-2 mt-0.5 flex items-center gap-2">
+          <BuzzIndicator buzz={issue.socialScore.totalBuzz} />
 
-          {/* Reading time */}
           <div className="flex items-center gap-1 text-xs text-muted-foreground ml-auto">
             <Clock size={10} />
-            <span>{readingTime(issue.cleanedText)} min</span>
+            <span>{readingTime(issue.cleanedText)} min read</span>
           </div>
-        </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-1.5">
-          <Button size="sm" className="h-7 text-xs gap-1.5 flex-1" onClick={handleRead}>
-            <BookOpen size={11} />
-            Read
-          </Button>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="outline" size="sm" className="h-7 w-7 p-0">
-                <Sparkles size={11} />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Explain with AI</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className={cn('h-7 w-7 p-0', issue.isSaved && 'text-primary')}
-                onClick={() => toggleSaved(issue.id)}
-              >
-                <Star size={11} />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{issue.isSaved ? 'Unsave' : 'Save'}</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground">
-                <Archive size={11} />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Archive</TooltipContent>
-          </Tooltip>
+          {/* Action buttons — stop card click propagation */}
+          <div className="flex items-center gap-1 pl-2 border-l border-border" onClick={(e) => e.stopPropagation()}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground">
+                  <Sparkles size={12} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>AI summary</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={cn('h-7 w-7 p-0', issue.isSaved ? 'text-amber-400 hover:text-amber-300' : 'text-muted-foreground hover:text-foreground')}
+                  onClick={(e) => handleAction(e, () => toggleSaved(issue.id))}
+                >
+                  <Star size={12} className={issue.isSaved ? 'fill-current' : ''} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{issue.isSaved ? 'Remove from saved' : 'Save for later'}</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground">
+                  <Archive size={12} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Archive</TooltipContent>
+            </Tooltip>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 px-2.5 text-xs gap-1.5 ml-1"
+              onClick={(e) => handleAction(e, handleRead)}
+            >
+              <BookOpen size={11} />
+              Open
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

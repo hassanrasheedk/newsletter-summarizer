@@ -18,6 +18,12 @@ const IMPORTANCE_STYLES = {
   low:    'bg-muted text-muted-foreground border-border',
 }
 
+const IMPORTANCE_LABELS = {
+  high: 'Must Read',
+  medium: 'Worth Reading',
+  low: 'FYI',
+}
+
 function readingTime(text: string) {
   return Math.max(1, Math.round((text ?? '').split(/\s+/).length / 200))
 }
@@ -169,7 +175,7 @@ export function TagsView() {
                           variant="outline"
                           className={cn('text-[9px] font-bold uppercase tracking-wide shrink-0', IMPORTANCE_STYLES[issue.importanceLevel])}
                         >
-                          {issue.importanceLevel}
+                          {IMPORTANCE_LABELS[issue.importanceLevel]}
                         </Badge>
                         <span className="text-xs text-muted-foreground">{issue.category}</span>
                       </div>

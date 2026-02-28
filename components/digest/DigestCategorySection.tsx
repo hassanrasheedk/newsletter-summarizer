@@ -21,6 +21,12 @@ const IMPORTANCE_STYLES = {
   low:    'bg-muted text-muted-foreground border-border',
 }
 
+const IMPORTANCE_LABELS = {
+  high: 'Must Read',
+  medium: 'Worth Reading',
+  low: 'FYI',
+}
+
 function readingTime(text: string) {
   return Math.max(1, Math.round((text ?? '').split(/\s+/).length / 200))
 }
@@ -47,7 +53,7 @@ function IssueRow({ issue }: { issue: NewsletterIssue }) {
               variant="outline"
               className={cn('text-[9px] font-bold uppercase tracking-wide shrink-0', IMPORTANCE_STYLES[issue.importanceLevel])}
             >
-              {issue.importanceLevel}
+              {IMPORTANCE_LABELS[issue.importanceLevel]}
             </Badge>
             <span className="text-sm font-medium leading-snug truncate">{issue.subject}</span>
           </div>
@@ -143,7 +149,7 @@ export function DigestCategorySection({ category }: { category: DigestCategory }
 
         <div className="flex flex-col items-end gap-1.5 ml-4 shrink-0">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">avg score</span>
+            <span className="text-xs text-muted-foreground">relevance</span>
             <span className="text-sm font-bold tabular-nums">{category.avgScore}</span>
           </div>
           <Progress value={category.avgScore} className="h-1 w-20" />

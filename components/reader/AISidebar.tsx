@@ -19,6 +19,12 @@ const BUZZ_BADGE = {
   low: 'bg-muted text-muted-foreground',
 }
 
+const BUZZ_LABEL = {
+  high: 'Trending online',
+  medium: 'Being discussed',
+  low: 'Low activity',
+}
+
 export function AISidebar({ id }: Props) {
   const [issue, setIssue] = useState<NewsletterIssue | null>(null)
   const [loading, setLoading] = useState(true)
@@ -88,17 +94,24 @@ export function AISidebar({ id }: Props) {
               <section className="flex flex-col gap-2">
                 <div className="flex items-center gap-1.5">
                   <TrendingUp size={12} className="text-muted-foreground" />
-                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Social Signals</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Online Buzz</p>
                 </div>
                 <Badge
                   variant="outline"
                   className={cn('text-[10px] w-fit', BUZZ_BADGE[issue.socialScore.totalBuzz])}
                 >
-                  {issue.socialScore.totalBuzz.toUpperCase()} BUZZ
+                  {BUZZ_LABEL[issue.socialScore.totalBuzz]}
                 </Badge>
-                <div className="flex gap-3 text-xs text-muted-foreground">
-                  <span>HN: {issue.socialScore.hnMentions}</span>
-                  <span>Reddit: {issue.socialScore.redditMentions}</span>
+                <div className="flex flex-col gap-0.5 text-xs text-muted-foreground">
+                  {issue.socialScore.hnMentions > 0 && (
+                    <span>Hacker News: {issue.socialScore.hnMentions} mention{issue.socialScore.hnMentions !== 1 ? 's' : ''}</span>
+                  )}
+                  {issue.socialScore.redditMentions > 0 && (
+                    <span>Reddit: {issue.socialScore.redditMentions} mention{issue.socialScore.redditMentions !== 1 ? 's' : ''}</span>
+                  )}
+                  {issue.socialScore.hnMentions === 0 && issue.socialScore.redditMentions === 0 && (
+                    <span>No mentions found</span>
+                  )}
                 </div>
               </section>
 
