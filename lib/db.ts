@@ -158,6 +158,14 @@ export function getAllTags(): TagCount[] {
     .sort((a, b) => b.count - a.count)
 }
 
+export function getTrackedSenderEmails(): string[] {
+  const db = getDb()
+  const rows = db.prepare(
+    'SELECT senderEmail FROM newsletter_sources WHERE isActive = 1'
+  ).all() as { senderEmail: string }[]
+  return rows.map((r) => r.senderEmail.toLowerCase())
+}
+
 export function getExistingIssueIds(ids: string[]): string[] {
   if (ids.length === 0) return []
   const db = getDb()

@@ -64,6 +64,71 @@ export async function getMessage(
   }
 }
 
+export interface SenderInfo {
+  from: string        // full "Name <email>" string
+  name: string
+  email: string
+  domain: string
+  count: number       // how many emails in the scanned batch
+}
+
+export async function listMessageSenders(
+  accessToken: string,
+  maxResults = 200
+): Promise<SenderInfo[]> {
+  const gmail = getGmailClient(accessToken)
+
+  // Fetch message IDs
+  const listRes = await gmail.users.messages.list({
+    userId: 'me',
+    q: 'in:inbox',
+    maxResults,
+  })
+  const ids = (listRes.data.messages ?? []).map((m) => m.id!).filter(Boolean)
+
+  // Fetch only From/Subject metadata in parallel batches of 20
+  const BATCH = 20
+  const senderMap = new Map<string, SenderInfo>()
+
+  for (let i = 0; i < ids.length; i += BATCH) {
+    const batch = ids.slice(i, i + BATCH)
+    const results = await Promise.allSettled(
+      batch.map((id) =>
+        gmail.users.messages.get({
+          userId: 'me',
+          id,
+          format: 'metadata',
+          metadataHeaders: ['From'],
+        })
+      )
+    )
+
+    for (const r of results) {
+      if (r.status !== 'fulfilled') continue
+      const headers = r.value.data.payload?.headers ?? []
+      const from = headers.find((h) => h.name?.toLowerCase() === 'from')?.value ?? ''
+      if (!from) continue
+
+      const emailMatch = from.match(/<([^>]+)>/)
+      const email = (emailMatch ? emailMatch[1] : from).toLowerCase().trim()
+      const nameMatch = from.match(/^([^<]+)</)
+      const name = nameMatch ? nameMatch[1].trim().replace(/^"+|"+$/g, '') : email.split('@')[0]
+      const domain = email.split('@')[1] ?? ''
+
+      if (!email || !domain) continue
+
+      const existing = senderMap.get(email)
+      if (existing) {
+        existing.count++
+      } else {
+        senderMap.set(email, { from, name, email, domain, count: 1 })
+      }
+    }
+  }
+
+  return [...senderMap.values()].sort((a, b) => b.count - a.count)
+}
+
 function stripHtml(html: string): string {
   return html
     .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
