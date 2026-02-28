@@ -1,7 +1,7 @@
 import { FeedHeader } from '@/components/feed/FeedHeader'
 import { FeedList } from '@/components/feed/FeedList'
 
-export const metadata = { title: 'Feed — Newsletter Summarizer' }
+export const metadata = { title: 'Feed — Skimr' }
 
 export default function FeedPage() {
   return (

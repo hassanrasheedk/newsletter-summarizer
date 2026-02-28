@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Inbox, Star, Tag, Settings, ChevronLeft, ChevronRight, Bot, Newspaper, CheckCircle2 } from 'lucide-react'
+import { Inbox, Star, Tag, Settings, ChevronLeft, ChevronRight, Bot, CheckCircle2 } from 'lucide-react'
+import { LogoWordmark, LogoIcon } from '@/components/ui/logo'
 import { cn } from '@/lib/utils'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
@@ -33,13 +34,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           {/* Logo */}
           <div className={cn('flex h-14 items-center border-b border-border px-3', collapsed ? 'justify-center' : 'gap-2')}>
             {collapsed ? (
-              <Newspaper size={18} className="text-primary shrink-0" />
+              <LogoIcon size={26} />
             ) : (
               <div className="flex items-center gap-2 flex-1 min-w-0">
-                <Newspaper size={16} className="text-primary shrink-0" />
-                <span className="truncate text-sm font-semibold text-sidebar-foreground">
-                  Newsletter Summarizer
-                </span>
+                <LogoWordmark />
               </div>
             )}
             <button

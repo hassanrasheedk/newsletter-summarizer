@@ -7,8 +7,9 @@ import { Providers } from '@/components/providers'
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  title: 'Newsletter Summarizer',
-  description: 'AI-powered newsletter intelligence — local-first, privacy-respecting.',
+  title: 'Skimr',
+  description: 'AI skims your newsletters so you don\'t have to. Signal over noise.',
+  icons: { icon: '/favicon.svg' },
 }
 
 export default function RootLayout({
