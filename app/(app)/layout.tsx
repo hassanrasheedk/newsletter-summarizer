@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Inbox, Star, Tag, Settings, ChevronLeft, ChevronRight, Bot, CheckCircle2 } from 'lucide-react'
+import { Inbox, Star, Tag, Settings, ChevronLeft, ChevronRight, Bot, CheckCircle2, Sun, Moon } from 'lucide-react'
+import { useTheme } from 'next-themes'
 import { LogoWordmark, LogoIcon } from '@/components/ui/logo'
 import { cn } from '@/lib/utils'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -20,6 +21,7 @@ const navItems = [
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false)
   const pathname = usePathname()
+  const { theme, setTheme } = useTheme()
 
   return (
     <TooltipProvider delayDuration={300}>
@@ -40,13 +42,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <LogoWordmark />
               </div>
             )}
-            <button
-              onClick={() => setCollapsed((c) => !c)}
-              className="ml-auto rounded-md p-1 text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-              aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-              {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-            </button>
+            <div className="ml-auto flex items-center gap-0.5">
+              <button
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="rounded-md p-1 text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                aria-label="Toggle theme"
+              >
+                {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+              </button>
+              <button
+                onClick={() => setCollapsed((c) => !c)}
+                className="rounded-md p-1 text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              >
+                {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+              </button>
+            </div>
           </div>
 
           {/* Nav */}

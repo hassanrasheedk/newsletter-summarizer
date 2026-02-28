@@ -45,7 +45,7 @@ export function AISidebar({ id }: Props) {
       </div>
 
       <ScrollArea className="flex-1">
-        <div className="flex flex-col gap-5 p-4">
+        <div className="flex flex-col gap-5 p-4 text-foreground">
           {loading ? (
             <>
               <Skeleton className="h-4 w-full" />

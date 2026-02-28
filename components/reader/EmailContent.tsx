@@ -72,9 +72,16 @@ export function EmailContent({ id }: Props) {
       </header>
 
       {issue.rawHtml ? (
-        <div
-          className="prose prose-sm dark:prose-invert max-w-none [font-family:Georgia,serif] leading-relaxed"
-          dangerouslySetInnerHTML={{ __html: issue.rawHtml }}
+        <iframe
+          srcDoc={issue.rawHtml}
+          sandbox="allow-same-origin"
+          className="w-full border-0 rounded-lg"
+          style={{ minHeight: '80vh' }}
+          onLoad={(e) => {
+            const iframe = e.currentTarget
+            const height = iframe.contentDocument?.documentElement?.scrollHeight
+            if (height) iframe.style.height = `${height}px`
+          }}
         />
       ) : (
         <div className="[font-family:Georgia,serif] leading-relaxed text-sm whitespace-pre-wrap">
