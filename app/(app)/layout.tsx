@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Inbox, Star, Tag, Settings, ChevronLeft, ChevronRight, Bot, CheckCircle2, Sun, Moon } from 'lucide-react'
@@ -20,8 +20,10 @@ const navItems = [
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
+  useEffect(() => setMounted(true), [])
 
   return (
     <TooltipProvider delayDuration={300}>
@@ -48,7 +50,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 className="rounded-md p-1 text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                 aria-label="Toggle theme"
               >
-                {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+                {mounted && (theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />)}
               </button>
               <button
                 onClick={() => setCollapsed((c) => !c)}

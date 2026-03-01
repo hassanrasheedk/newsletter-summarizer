@@ -13,15 +13,19 @@ import type { NewsletterIssue } from '@/types'
 import type { TagCount } from '@/lib/db'
 
 const IMPORTANCE_STYLES = {
-  high:   'bg-[oklch(0.62_0.18_162/0.15)] text-[oklch(0.62_0.18_162)] border-[oklch(0.62_0.18_162/0.3)]',
-  medium: 'bg-[oklch(0.72_0.19_75/0.15)]  text-[oklch(0.72_0.19_75)]  border-[oklch(0.72_0.19_75/0.3)]',
-  low:    'bg-muted text-muted-foreground border-border',
+  critical: 'bg-[oklch(0.55_0.22_22/0.15)] text-[oklch(0.55_0.22_22)] border-[oklch(0.55_0.22_22/0.3)]',
+  high:     'bg-[oklch(0.62_0.18_162/0.15)] text-[oklch(0.62_0.18_162)] border-[oklch(0.62_0.18_162/0.3)]',
+  medium:   'bg-[oklch(0.72_0.19_75/0.15)]  text-[oklch(0.72_0.19_75)]  border-[oklch(0.72_0.19_75/0.3)]',
+  low:      'bg-muted text-muted-foreground border-border',
+  minimal:  'bg-muted/50 text-muted-foreground/60 border-border/50',
 }
 
 const IMPORTANCE_LABELS = {
-  high: 'Must Read',
-  medium: 'Worth Reading',
-  low: 'FYI',
+  critical: 'Critical',
+  high:     'Must Read',
+  medium:   'Worth Reading',
+  low:      'FYI',
+  minimal:  'Skip',
 }
 
 function readingTime(text: string) {

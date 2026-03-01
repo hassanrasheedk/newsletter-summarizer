@@ -34,7 +34,13 @@ Respond in JSON:
   "whyItMatters": "1-paragraph plain English explanation of why this is important",
   "category": "Tech|Finance|AI|Health|Politics|Culture|Business|Science|Other",
   "tags": ["tag1", "tag2", "tag3"],
-  "importanceScore": 0-100
+  "importanceScore": <integer 0-100, use the full range with this strict distribution:
+    85-100 → CRITICAL: Breaking news, major market disruption, critical security vulnerability, paradigm-shifting announcement. ~5% of newsletters.
+    70-84  → HIGH: Significant industry development, strong original research, important trend with clear near-term impact. ~15% of newsletters.
+    45-69  → MEDIUM: Solid informative content, useful updates, good analysis without urgency. Most newsletters belong here (~45%).
+    25-44  → LOW: Routine roundups, minor announcements, rehashed content, low information density. ~25% of newsletters.
+    0-24   → MINIMAL: Purely promotional, no original insight, filler content. ~10% of newsletters.
+    Be critical and use the full range. The median score should be 45-55. Do NOT cluster scores above 70 — that tier is reserved for genuinely exceptional content.>
 }`,
       },
     ],

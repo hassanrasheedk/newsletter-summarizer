@@ -9,7 +9,7 @@ export type Category =
   | 'Science'
   | 'Other'
 
-export type ImportanceLevel = 'high' | 'medium' | 'low'
+export type ImportanceLevel = 'critical' | 'high' | 'medium' | 'low' | 'minimal'
 
 export type ViewMode = 'feed' | 'quickscan' | 'digest'
 

@@ -7,15 +7,19 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import type { NewsletterIssue } from '@/types'
 
 const IMPORTANCE_DOT = {
-  high: 'bg-[oklch(0.62_0.18_162)]',
-  medium: 'bg-[oklch(0.72_0.19_75)]',
-  low: 'bg-muted-foreground',
+  critical: 'bg-[oklch(0.55_0.22_22)]',
+  high:     'bg-[oklch(0.62_0.18_162)]',
+  medium:   'bg-[oklch(0.72_0.19_75)]',
+  low:      'bg-muted-foreground',
+  minimal:  'bg-muted-foreground/40',
 }
 
 const IMPORTANCE_LABELS = {
-  high: 'Must Read',
-  medium: 'Worth Reading',
-  low: 'FYI',
+  critical: 'Critical',
+  high:     'Must Read',
+  medium:   'Worth Reading',
+  low:      'FYI',
+  minimal:  'Skip',
 }
 
 interface Props {
@@ -38,7 +42,7 @@ export function QuickScanMode({ issues }: Props) {
       {/* Legend */}
       <div className="flex items-center gap-4 px-4 py-2 border-b border-border bg-muted/20">
         <span className="text-[11px] text-muted-foreground font-medium uppercase tracking-wide">Priority key:</span>
-        {(['high', 'medium', 'low'] as const).map((level) => (
+        {(['critical', 'high', 'medium', 'low', 'minimal'] as const).map((level) => (
           <span key={level} className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <span className={cn('h-2 w-2 rounded-full shrink-0', IMPORTANCE_DOT[level])} />
             {IMPORTANCE_LABELS[level]}

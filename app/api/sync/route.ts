@@ -4,7 +4,7 @@ import { listMessageIds, getMessage } from '@/lib/gmail'
 import { isNewsletter, extractDomain, extractSenderName } from '@/lib/newsletter-detector'
 import { summarizeNewsletter } from '@/lib/claude'
 import { scoreNewsletter } from '@/lib/social-scorer'
-import { upsertSource, upsertIssue, getExistingIssueIds, getTrackedSenderEmails } from '@/lib/db'
+import { upsertSource, upsertIssue, getExistingIssueIds, getTrackedSenderEmails, getStats } from '@/lib/db'
 import type { NewsletterSource, NewsletterIssue, ImportanceLevel } from '@/types'
 import { randomUUID } from 'crypto'
 
@@ -17,7 +17,12 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({})) as { model?: string }
   const model = body.model ?? 'gpt-5-mini'
 
-  const ids = await listMessageIds(session.accessToken, 'in:inbox', 100)
+  const isFirstSync = getStats().total === 0
+  const query = isFirstSync ? 'in:inbox newer_than:14d' : 'in:inbox newer_than:7d'
+  const fetchLimit = isFirstSync ? 500 : 200
+  const processLimit = isFirstSync ? 200 : 50
+
+  const ids = await listMessageIds(session.accessToken, query, fetchLimit)
   let synced = 0
 
   // Skip emails already in the database
@@ -27,7 +32,7 @@ export async function POST(req: NextRequest) {
   // Also include manually-tracked senders that wouldn't pass newsletter header checks
   const manuallyTracked = new Set(getTrackedSenderEmails())
 
-  for (const id of newIds.slice(0, 50)) {
+  for (const id of newIds.slice(0, processLimit)) {
     const msg = await getMessage(session.accessToken, id).catch(() => null)
     if (!msg) continue
 
@@ -60,7 +65,11 @@ export async function POST(req: NextRequest) {
     const aiResult = ai.status === 'fulfilled' ? ai.value : null
     const socialResult = social.status === 'fulfilled' ? social.value : { hnMentions: 0, redditMentions: 0, totalBuzz: 'low' as const }
     const score = aiResult?.importanceScore ?? 50
-    const importanceLevel: ImportanceLevel = score >= 70 ? 'high' : score >= 40 ? 'medium' : 'low'
+    const importanceLevel: ImportanceLevel =
+      score >= 85 ? 'critical' :
+      score >= 70 ? 'high' :
+      score >= 45 ? 'medium' :
+      score >= 25 ? 'low' : 'minimal'
 
     const issue: NewsletterIssue = {
       id: id,
