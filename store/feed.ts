@@ -16,6 +16,7 @@ interface FeedState {
   setSearchQuery: (query: string) => void
   markRead: (id: string) => void
   toggleSaved: (id: string) => void
+  archive: (id: string) => void
   refresh: () => void
 }
 
@@ -45,6 +46,11 @@ export const useFeedStore = create<FeedState>((set) => ({
       newsletters: state.newsletters.map((n) =>
         n.id === id ? { ...n, isSaved: !n.isSaved } : n
       ),
+    })),
+
+  archive: (id) =>
+    set((state) => ({
+      newsletters: state.newsletters.filter((n) => n.id !== id),
     })),
 
   refresh: () => set((state) => ({ refreshTick: state.refreshTick + 1 })),

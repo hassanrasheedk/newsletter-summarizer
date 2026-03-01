@@ -56,11 +56,23 @@ function BuzzIndicator({ buzz }: { buzz: 'high' | 'medium' | 'low' }) {
 
 export function NewsletterCard({ issue }: Props) {
   const router = useRouter()
-  const { markRead, toggleSaved } = useFeedStore()
+  const { markRead, toggleSaved, archive } = useFeedStore()
 
   function handleRead() {
     markRead(issue.id)
     router.push(`/read/${issue.id}`)
+  }
+
+  async function handleToggleSaved(e: React.MouseEvent) {
+    e.stopPropagation()
+    toggleSaved(issue.id)
+    await fetch('/api/saved', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: issue.id }) })
+  }
+
+  async function handleArchive(e: React.MouseEvent) {
+    e.stopPropagation()
+    archive(issue.id)
+    await fetch('/api/archive', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: issue.id }) })
   }
 
   function handleAction(e: React.MouseEvent, action: () => void) {
@@ -136,7 +148,7 @@ export function NewsletterCard({ issue }: Props) {
                   variant="ghost"
                   size="sm"
                   className={cn('h-7 w-7 p-0', issue.isSaved ? 'text-amber-400 hover:text-amber-300' : 'text-muted-foreground hover:text-foreground')}
-                  onClick={(e) => handleAction(e, () => toggleSaved(issue.id))}
+                  onClick={handleToggleSaved}
                 >
                   <Star size={12} className={issue.isSaved ? 'fill-current' : ''} />
                 </Button>
@@ -145,7 +157,7 @@ export function NewsletterCard({ issue }: Props) {
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground">
+                <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground" onClick={handleArchive}>
                   <Archive size={12} />
                 </Button>
               </TooltipTrigger>

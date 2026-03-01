@@ -53,6 +53,7 @@ export interface NewsletterIssue {
 
   isRead: boolean
   isSaved: boolean
+  isArchived: boolean
 }
 
 export interface SummarizeResult {

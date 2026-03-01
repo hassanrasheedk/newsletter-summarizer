@@ -88,6 +88,7 @@ export async function POST(req: NextRequest) {
       socialScore: socialResult,
       isRead: false,
       isSaved: false,
+      isArchived: false,
     }
     upsertIssue(issue)
     synced++

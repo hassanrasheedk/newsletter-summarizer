@@ -45,9 +45,15 @@ function initSchema(db: Database.Database) {
       socialScore TEXT NOT NULL DEFAULT '{"hnMentions":0,"redditMentions":0,"totalBuzz":"low"}',
       isRead INTEGER NOT NULL DEFAULT 0,
       isSaved INTEGER NOT NULL DEFAULT 0,
+      isArchived INTEGER NOT NULL DEFAULT 0,
       FOREIGN KEY (sourceId) REFERENCES newsletter_sources(id)
     );
   `)
+  // Migration: add isArchived if it doesn't exist yet
+  const cols = db.prepare(`PRAGMA table_info(newsletter_issues)`).all() as { name: string }[]
+  if (!cols.some((c) => c.name === 'isArchived')) {
+    db.exec(`ALTER TABLE newsletter_issues ADD COLUMN isArchived INTEGER NOT NULL DEFAULT 0`)
+  }
 }
 
 // ── Sources ──────────────────────────────────────────────────────────────────
@@ -76,8 +82,8 @@ export function getSources(): NewsletterSource[] {
 export function upsertIssue(issue: NewsletterIssue): void {
   const db = getDb()
   db.prepare(`
-    INSERT INTO newsletter_issues (id, sourceId, subject, receivedAt, rawHtml, cleanedText, summary, keyPoints, whyItMatters, category, tags, importanceScore, importanceLevel, socialScore, isRead, isSaved)
-    VALUES (@id, @sourceId, @subject, @receivedAt, @rawHtml, @cleanedText, @summary, @keyPoints, @whyItMatters, @category, @tags, @importanceScore, @importanceLevel, @socialScore, @isRead, @isSaved)
+    INSERT INTO newsletter_issues (id, sourceId, subject, receivedAt, rawHtml, cleanedText, summary, keyPoints, whyItMatters, category, tags, importanceScore, importanceLevel, socialScore, isRead, isSaved, isArchived)
+    VALUES (@id, @sourceId, @subject, @receivedAt, @rawHtml, @cleanedText, @summary, @keyPoints, @whyItMatters, @category, @tags, @importanceScore, @importanceLevel, @socialScore, @isRead, @isSaved, @isArchived)
     ON CONFLICT(id) DO UPDATE SET
       summary = excluded.summary,
       keyPoints = excluded.keyPoints,
@@ -94,15 +100,21 @@ export function upsertIssue(issue: NewsletterIssue): void {
     socialScore: JSON.stringify(issue.socialScore),
     isRead: issue.isRead ? 1 : 0,
     isSaved: issue.isSaved ? 1 : 0,
+    isArchived: issue.isArchived ? 1 : 0,
   })
 }
 
 export function getIssues(limit = 50, offset = 0): NewsletterIssue[] {
   const db = getDb()
   const rows = db.prepare(
-    'SELECT * FROM newsletter_issues ORDER BY importanceScore DESC, receivedAt DESC LIMIT ? OFFSET ?'
+    'SELECT * FROM newsletter_issues WHERE isArchived = 0 ORDER BY importanceScore DESC, receivedAt DESC LIMIT ? OFFSET ?'
   ).all(limit, offset) as Record<string, unknown>[]
   return rows.map(deserializeIssue)
+}
+
+export function archiveIssue(id: string): void {
+  const db = getDb()
+  db.prepare('UPDATE newsletter_issues SET isArchived = 1 WHERE id = ?').run(id)
 }
 
 export function getIssueById(id: string): NewsletterIssue | null {
@@ -194,5 +206,6 @@ function deserializeIssue(row: Record<string, unknown>): NewsletterIssue {
     socialScore: JSON.parse(row.socialScore as string) as SocialScore,
     isRead: Boolean(row.isRead),
     isSaved: Boolean(row.isSaved),
+    isArchived: Boolean(row.isArchived),
   } as NewsletterIssue
 }
