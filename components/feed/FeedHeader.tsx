@@ -2,6 +2,7 @@
 
 import { RefreshCw, Search } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -13,6 +14,7 @@ export function FeedHeader() {
   const { viewMode, setViewMode, setSearchQuery, searchQuery, refresh } = useFeedStore()
   const [syncing, setSyncing] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const router = useRouter()
   useEffect(() => setMounted(true), [])
 
   async function handleSync() {
@@ -43,7 +45,10 @@ export function FeedHeader() {
       </div>
 
       {mounted && (
-        <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
+        <Tabs value={viewMode} onValueChange={(v) => {
+          if (v === 'digest') { router.push('/digest'); return }
+          setViewMode(v as ViewMode)
+        }}>
           <TabsList className="h-8">
             <TabsTrigger value="feed" className="text-xs px-3">Feed</TabsTrigger>
             <TabsTrigger value="quickscan" className="text-xs px-3">Quick Scan</TabsTrigger>
